@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+
+set -e
+set -u
+
+unwarper=ppmunwarp
+TMPDIR=${TMPDIR:-/tmp}
+[[ -f /etc/splitall.rc ]] && source /etc/splitall.rc
+
+usage() {
+	echo "Usage: $0 DIRECTORY"
+	echo "The 'first' file is the unwarp-calibration. Every other file will be unwarped"
+}
+
+if [[ $# -ne 1 ]]; then
+	usage >&2
+	exit 2
+fi
+dir=$(readlink -f $1)
+shift 1
+
+calibrate() {
+	if [[ ! -f "$dir/unwarp.L" ]]; then
+		unwarpcalibration=$(ls -1 $dir/*.L.jpg| sort| head -n1)
+		convert $unwarpcalibration "${unwarpcalibration%.jpg}.ppm"
+		$unwarper -c "${unwarpcalibration%.jpg}.ppm" > "$dir/unwarp.L" 
+		rm "${unwarpcalibration%.jpg}.ppm"
+	fi
+	if [[ ! -f "$dir/unwarp.R" ]]; then
+		unwarpcalibration=$(ls -1 $dir/*.R.jpg| sort| head -n1)
+		convert $unwarpcalibration "${unwarpcalibration%.jpg}.ppm"
+		$unwarper -c "${unwarpcalibration%.jpg}.ppm" > "$dir/unwarp.R" 
+		rm "${unwarpcalibration%.jpg}.ppm"
+	fi
+}
+
+unwarp() {
+	[[ $# -eq 1 ]]
+	imgtounwarp="$1"
+	unwarped="$dir/unwarp/$(basename $1 .jpg).ppm"
+	profile="$dir/unwarp.R"
+	[[ $(basename $imgtounwarp .jpg) =~ .L ]] && profile="$dir/unwarp.L"
+	[[ -f "$imgtounwarp" ]]
+	convert $imgtounwarp ppm:- | $unwarper -d "$profile" > "$unwarped"
+}
+
+calibrate
+mkdir "$dir/unwarp/"
+ls -1 $dir/*.jpg | sort | tail -n +3 | while read fname; do
+	unwarp "$fname"
+done
+exit 0

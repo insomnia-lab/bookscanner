@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+
+set -e
+set -u
+
+colordetect='colordetect --hue 180 --min-value 80 --param2 20 --coordinates - --cut-left 30% --cut-right 30% --cut-top 10% --cut-bottom 10% --min-dist 10% --min-radius 1% --max-radius 6%'
+imagecut=imagecut
+[[ -f /etc/splitall.rc ]] && source /etc/splitall.rc
+
+usage() {
+	echo "Usage: $0 DIRECTORY"
+	echo "The 'first' file is the split-calibration. Every other file is split"
+}
+if [[ $# -ne 1 ]]; then
+	usage >&2
+	exit 2
+fi
+dir=$(readlink -f $1)
+shift 1
+
+calibrate() {
+	if [[ ! -f "$dir/split.txt" ]]; then
+		splitcalibration=$(ls -1 "$dir"| sort| head -n1)
+		$colordetect $splitcalibration > "$dir/split.txt"
+	fi
+}
+
+counter=0
+split() {
+	[[ $# -eq 1 ]]
+	imgtosplit="$1"
+	[[ -f "$imgtosplit" ]]
+	$imagecut "$dir/split.txt" "$imgtosplit"  --outfile "$dir/split/$(printf %03d $counter).jpg"
+	[[ -f "$dir/split/$(printf %03d $counter).L.jpg" ]]
+	[[ -f "$dir/split/$(printf %03d $counter).R.jpg" ]]
+	counter=$((counter+1))
+}
+
+calibrate
+mkdir "$dir/split/"
+ls -1 $dir/*.jpg | sort | tail -n +3 | while read fname; do
+	split "$fname"
+done
+exit 0
