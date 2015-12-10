@@ -38,7 +38,7 @@ split() {
 
 calibrate
 mkdir "$dir/split/"
-ls -1 $dir/*.jpg | sort | tail -n +3 | while read fname; do
+ls -1 $dir/*.jpg | sort | tail -n +2 | while read fname; do
 	split "$fname"
 done
 exit 0
