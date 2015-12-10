@@ -4,6 +4,7 @@ set -e
 set -u
 
 unwarper=ppmunwarp
+unwarp_calib=""
 TMPDIR=${TMPDIR:-/tmp}
 [[ -f /etc/splitall.rc ]] && source /etc/splitall.rc
 
@@ -23,13 +24,13 @@ calibrate() {
 	if [[ ! -f "$dir/unwarp.L" ]]; then
 		unwarpcalibration=$(ls -1 $dir/*.L.jpg| sort| head -n1)
 		convert $unwarpcalibration "${unwarpcalibration%.jpg}.ppm"
-		$unwarper -c "${unwarpcalibration%.jpg}.ppm" > "$dir/unwarp.L" 
+		$unwarper $unwarp_calib -c "${unwarpcalibration%.jpg}.ppm" > "$dir/unwarp.L" 
 		rm "${unwarpcalibration%.jpg}.ppm"
 	fi
 	if [[ ! -f "$dir/unwarp.R" ]]; then
 		unwarpcalibration=$(ls -1 $dir/*.R.jpg| sort| head -n1)
 		convert $unwarpcalibration "${unwarpcalibration%.jpg}.ppm"
-		$unwarper -c "${unwarpcalibration%.jpg}.ppm" > "$dir/unwarp.R" 
+		$unwarper $unwarp_calib -c "${unwarpcalibration%.jpg}.ppm" > "$dir/unwarp.R" 
 		rm "${unwarpcalibration%.jpg}.ppm"
 	fi
 }

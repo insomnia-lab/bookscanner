@@ -1,4 +1,5 @@
 colordetect='colordetect --hue 180 --min-value 80 --param2 20 --coordinates - --cut-left 30% --cut-right 30% --cut-top 10% --cut-bottom 10% --min-dist 10% --min-radius 1% --max-radius 6%'
 imagecut=imagecut
+unwarp_calib=''
 
 # vim: set ft=sh:
