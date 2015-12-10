@@ -5,7 +5,7 @@ set -u
 
 colordetect='colordetect --hue 180 --min-value 80 --param2 20 --coordinates - --cut-left 30% --cut-right 30% --cut-top 10% --cut-bottom 10% --min-dist 10% --min-radius 1% --max-radius 6%'
 imagecut=imagecut
-[[ -f /etc/splitall.rc ]] && source /etc/splitall.rc
+[[ -f /etc/bookscanner/splitall.rc ]] && source /etc/bookscanner/splitall.rc
 
 usage() {
 	echo "Usage: $0 DIRECTORY"

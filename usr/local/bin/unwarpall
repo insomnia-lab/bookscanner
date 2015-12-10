@@ -6,7 +6,7 @@ set -u
 unwarper=ppmunwarp
 unwarp_calib=""
 TMPDIR=${TMPDIR:-/tmp}
-[[ -f /etc/splitall.rc ]] && source /etc/splitall.rc
+[[ -f /etc/bookscanner/splitall.rc ]] && source /etc/bookscanner/splitall.rc
 
 usage() {
 	echo "Usage: $0 DIRECTORY"
