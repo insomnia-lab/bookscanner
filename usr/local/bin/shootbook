@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+
+bin_shoot="$(readlink -f $(dirname $0)/shoot)"
+
+usage() {
+	echo "Usage: $0 [BOOKNAME]"
+}
+
+if [[ "$1" = "--help" ]]; then
+	usage >&2
+	exit
+fi
+
+if [[ -z $1 ]]; then
+	bookname=$(date +%Y-%m-%d.%H-%M)
+else
+	bookname="$1"
+	shift
+fi
+
+set -e
+set -u
+
+mkdir "$bookname"
+cd "$bookname"
+
+echo "Press ENTER to shoot, h for help"
+count=0
+while true; do
+	read command
+	case "$command" in
+	q|quit)
+		echo "Bye."
+		break
+		;;
+	s|shoot|'')
+		if $bin_shoot; then
+			count=$((count+1))
+			echo "Page $count shot"
+		else
+			echo "Error shooting"
+		fi
+		;;
+	h|help)
+		echo "Valid commands are:"
+		echo "    empty        shoots a photo"
+		echo "    'quit'       ends the book acquisition"
+		echo "    'help'       prints this help"
+		;;
+	*)
+		echo "Unrecognized command"
+		echo "Valid commands are:"
+		echo "    empty        shoots a photo"
+		echo "    'quit'       ends the book acquisition"
+		echo "    'help'       prints this help"
+		;;
+	esac
+done
