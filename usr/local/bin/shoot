@@ -1,6 +1,13 @@
 #!/usr/bin/env bash
+fname="$(date +%F-%T)"
 chdkptp -c -erec \
 	-e"luar set_zoom(4)" \
 	-e'luar set_prop(16, 2)' \
 	-e'luar while(get_flash_mode() < 2) do click("up") end' \
-	-e"rs -jpg -sd=500mm $(date +%F-%T)"
+	-e"rs -jpg -sd=500mm $fname"
+
+if [[ -f "${fname}.jpg" ]]; then
+	exit 0
+else
+	exit 1
+fi
