@@ -21,7 +21,7 @@ shift 1
 calibrate() {
 	if [[ ! -f "$dir/split.txt" ]]; then
 		splitcalibration=$(ls -1 "$dir"| sort| head -n1)
-		$colordetect $splitcalibration > "$dir/split.txt"
+		$colordetect "$dir/$splitcalibration" > "$dir/split.txt"
 	fi
 }
 
